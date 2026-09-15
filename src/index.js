@@ -1,14 +1,31 @@
-document.addEventListener('DOMContentLoaded',setup)
+import { MiniMaple } from './miniMaple.js';
+
+document.addEventListener('DOMContentLoaded', setup);
 
 function setup() {
-    document.getElementById('demoButton').onclick = addSomething;
+    const diffButton = document.getElementById('diffButton');
+    if (diffButton) {
+        diffButton.onclick = calculateDiff;
+    }
 }
 
-function addSomething(){
-    const someDummyDiv = document.createElement('div');
-    someDummyDiv.classList.add('generated');
-    const count = document.getElementsByClassName('generated').length;
-    someDummyDiv.innerHTML = `I was created by JS! There are already ${count} of my friends!`;
-    const container = document.getElementById('container');
-    container.appendChild(someDummyDiv);
+function calculateDiff() {
+    let polyInput = document.getElementById('polynomialInput').value;
+    const varInput = document.getElementById('variableInput').value.trim();
+    const resultDiv = document.getElementById('result');
+
+    polyInput = polyInput.replace(/\s+/g, '');
+
+    if (!polyInput || !varInput) {
+        resultDiv.textContent = 'Пожалуйста, введите многочлен и переменную.';
+        return;
+    }
+
+    try {
+        const result = MiniMaple.diff(polyInput, varInput);
+        resultDiv.textContent = result;
+    } catch (error) {
+        resultDiv.textContent = 'Ошибка вычисления (проверьте консоль F12)';
+        console.error('Ошибка выполнения:', error);
+    }
 }

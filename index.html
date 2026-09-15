@@ -8,14 +8,23 @@
 </head>
 
 <body>
-<h1>Implement the symbolic diff here</h1>
-<div id="container">
+<h1>Symbolic Differentiation (MiniMaple)</h1>
 
-</div>
-<div>
-    <button id="demoButton">
-        Add something
-    </button>
+<div id="container">
+    <div>
+        <label for="polynomialInput">Многочлен:</label>
+        <input type="text" id="polynomialInput" placeholder="4*x^3-x^2" value="4*x^3-x^2" />
+    </div>
+    <br/>
+    <div>
+        <label for="variableInput">Переменная:</label>
+        <input type="text" id="variableInput" placeholder="x" value="x" />
+    </div>
+    <br/>
+    <button id="diffButton">Дифференцировать</button>
+
+    <h3>Результат:</h3>
+    <div id="result"></div>
 </div>
 </body>
 </html>
