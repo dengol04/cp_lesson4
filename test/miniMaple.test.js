@@ -74,3 +74,8 @@ test('-4*x^3-2*x^2, x', () => {
     let res = MiniMaple.diff("-4*x^3-2*x^2", "x");
     expect(res).toBe("-12*x^2-4*x");
 });
+
+test('+--4*x^3+-2*x^+2, x', () => {
+    let res = MiniMaple.diff("+--4*x^3+-2*x^-+-2", "x");
+    expect(res).toBe("12*x^2-4*x");
+});

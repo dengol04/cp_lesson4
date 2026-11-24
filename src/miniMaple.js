@@ -1,87 +1,46 @@
+import { Term, TermParsingError } from "./term";
+
 class MiniMaple{
+    /**
+     * @param {string} polynomial 
+     * @param {string} variable 
+     * @returns {string}
+     */
     static diff(polynomial, variable) {
-        const monomials = polynomial.match(/(?:[\+-]?\d*)?\*?(?:[^\d\^\*\+-]+)(?:\^-?\d+)?/g)
-        let diffed_polynomial = ""
-        for (const monomial of monomials) {
-            diffed_polynomial += this.#diff_monomial(monomial, variable)
+        polynomial = this.#simplify_polynomial(polynomial);
+        let diffed_polynomial = "";
+        const terms = polynomial.match(/(?:[\+-]?\d*)?\*?(?:[^\d\^\*\+-]+)(?:\^[\+-]?\d+)?/g);
+        for (const term of terms) {
+            const parsed_term = Term.from_string(term);
+            if (parsed_term === null)
+                throw new TermParsingError(term);
+
+            const diffed_term = parsed_term.diff(variable);
+
+            if (diffed_polynomial)
+                if (diffed_term.coeff > 0)
+                    diffed_polynomial += "+";
+
+            if (diffed_term.coeff === 0)
+                continue;
+
+            diffed_polynomial += diffed_term.to_string();
         }
 
-        if (diffed_polynomial && diffed_polynomial[0] == "+")
-            diffed_polynomial = diffed_polynomial.slice(1)
-
-        return diffed_polynomial === "" ? "0" : diffed_polynomial
+        return diffed_polynomial ? diffed_polynomial : "0";
     }
 
-    static monomial_parts = monomial => monomial.match(/^([\+-]?\d*)?\*?([^\d\^\*\+-]+)(\^-?\d+)?$/)
+    /**
+     * @param {string} polynomial
+     * @returns {string} 
+     */
+    static #simplify_polynomial(polynomial) {
+        const simplified_coef = polynomial
+                                .replace(/\+-/g, "-")
+                                .replace(/-\+/g, "-")
+                                .replace(/--/g, "+");
 
-    static #diff_monomial(monomial, variable) {
-        let coef = this.#find_coef(monomial)
-        let diff_var = this.#find_diff_var(monomial)
-        let pow = this.#find_pow(monomial)
-
-        if (variable !== diff_var)
-            return ""
-
-        let diffed_coef = coef * pow
-        let diffed_pow = pow - 1
-
-        let diffed_monomial = this.#assemble_monomial(diffed_coef, variable, diffed_pow)
-
-        return diffed_monomial
-    }
-
-    static #assemble_monomial(coef, variable, pow) {
-        let monomial = ""
-
-        if (coef === 0)
-            return ""
-
-        if (pow === 0)
-            return coef.toString()
-
-        if (coef !== 1)
-            if (coef === -1)
-                monomial += "-"
-            else {
-                if (coef > 0)
-                    monomial += "+"
-                monomial += coef + "*"
-            }
-        
-        monomial += variable
-
-        if (pow !== 1)
-            monomial += "^" + pow
-        
-        return monomial
-    }
-
-    static #find_coef(monomial) {
-        let coef = this.monomial_parts(monomial)[1]
-
-        if (coef === "" || coef === undefined)
-            return 1
-        else {     
-            if (coef === "-")
-                return -1
-
-            return Number(coef)
-        }
-    }
-
-    static #find_pow(monomial) {
-        let pow = this.monomial_parts(monomial)[3]
-        
-        if (pow === "" || pow == undefined)
-            return 1
-        else {
-            pow = pow.slice(1)
-            return Number(pow)
-        }
-    }
-
-    static #find_diff_var(monomial) {
-        return this.monomial_parts(monomial)[2]
+        return simplified_coef;
     }
 }
 
