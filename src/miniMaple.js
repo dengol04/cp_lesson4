@@ -1,4 +1,4 @@
-import { Term, TermParsingError } from "./term";
+import { Term, TermParsingError } from "./term.js";
 
 class MiniMaple{
     /**

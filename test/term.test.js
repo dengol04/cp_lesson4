@@ -1,5 +1,4 @@
-import { Term } from "../src/term";
-import { Symbol } from "../src/symbol";
+import { Term } from "../src/term.js";
 
 test('4*x^3, x', () => {
     const term = new Term(4, "x", 3);
