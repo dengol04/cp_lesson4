@@ -1,11 +1,11 @@
 class Term {
     /**
-     * @param {number} coeff
+     * @param {number} coef
      * @param {string} symbol
      * @param {number} pow
      */
-    constructor(coeff, symbol, pow) {
-        this.coeff = Number(coeff);
+    constructor(coef, symbol, pow) {
+        this.coef = Number(coef);
         this.symbol = symbol;
         this.pow = Number(pow);
     }
@@ -15,31 +15,57 @@ class Term {
      * @returns {Term}
      */
     diff(diff_sym) {
-        let diffed_coef = this.coeff * this.pow;
+        let diffed_coef = this.coef * this.pow;
         if (diff_sym !== this.symbol)
                     diffed_coef = 0;
 
         const diffed_pow = this.pow - 1;
 
         const diffed_term = new Term(diffed_coef, this.symbol, diffed_pow);
-        
+
         return diffed_term; 
     }
 
     to_string() {
-        if (this.pow === 0)
-            return this.coeff.toString();
-        else if (this.pow === 1)
-            return `${this.coeff}*${this.symbol}`;
+        if (this.pow === 0 || this.coef === 0)
+            return this.coef.toString();
 
-        let simplified_coef = this.coeff;
-        if (simplified_coef === 1)
-            simplified_coef = "";
-        else if (simplified_coef === 0)
-            return "0";
-
-        return `${simplified_coef}*${this.symbol}^${this.pow}`;
+        const formatted_coef = this.#format_coef(this.coef);
+        const formatted_pow = this.#format_pow(this.pow);
+        
+        return `${formatted_coef}${this.symbol}${formatted_pow}`;
     }
+
+    /**
+     * @param {number} pow
+     * @returns {string} contains "^" at the beginning
+     */
+    #format_pow(pow) {
+        let formatted_pow = pow;
+        if (formatted_pow === 1)
+            formatted_pow = "";
+        else
+            formatted_pow = "^" + formatted_pow.toString();
+
+        return formatted_pow;
+    }
+
+    /**
+     * @param {number} coef
+     * @returns {string} contains "*" at the end
+     */
+    #format_coef(coef) {
+        let formatted_coef = coef;
+        if (formatted_coef === 1)
+            formatted_coef = "";
+        else if (formatted_coef === -1)
+            formatted_coef = "-";
+        else 
+            formatted_coef = formatted_coef.toString() + "*";
+
+        return formatted_coef;
+    }
+
 
     static from_string(str) {
         const term_parts = str.match(/(?<coef>[\+-]?\d*)?\*?(?<sym>[^\d\^\*\+-]+)(?<pow>\^[\+-]?\d+)?/);

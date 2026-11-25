@@ -10,6 +10,10 @@ class MiniMaple{
         polynomial = this.#simplify_polynomial(polynomial);
         let diffed_polynomial = "";
         const terms = polynomial.match(/(?:[\+-]?\d*)?\*?(?:[^\d\^\*\+-]+)(?:\^[\+-]?\d+)?/g);
+
+        if (!terms)
+            return "0";
+
         for (const term of terms) {
             const parsed_term = Term.from_string(term);
             if (parsed_term === null)
@@ -18,10 +22,10 @@ class MiniMaple{
             const diffed_term = parsed_term.diff(variable);
 
             if (diffed_polynomial)
-                if (diffed_term.coeff > 0)
+                if (diffed_term.coef > 0)
                     diffed_polynomial += "+";
 
-            if (diffed_term.coeff === 0)
+            if (diffed_term.coef === 0)
                 continue;
 
             diffed_polynomial += diffed_term.to_string();
@@ -36,6 +40,7 @@ class MiniMaple{
      */
     static #simplify_polynomial(polynomial) {
         const simplified_coef = polynomial
+                                .replace(/\s/g, "")
                                 .replace(/\+-/g, "-")
                                 .replace(/-\+/g, "-")
                                 .replace(/--/g, "+");
